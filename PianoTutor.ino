@@ -43,3 +43,21 @@ void loop() {
     }
   }
 }
+
+void game(int[] song) {
+  //play LED instructions
+  for (int i = 0; i < 12; i++) {
+    pinMode(buttonPins[i], OUTPUT);
+  }
+  for (int i = 0; i < song.length; i++){
+    // play the corresponding tone
+      tone(piezoPin, notes[song[i]]);  
+
+    // light up the right LED
+      digitalWrite(buttonPins[song[i]], 1); 
+      delay(200);
+      digitalWrite(buttonPins[song[i]], 0);
+  }
+  
+  //track button presses and alert when incorrect
+}
