@@ -1,6 +1,7 @@
 /* CICS256: Make
- * Arduino 101
-  */
+ * Final Project: Piano Tutor
+ */
+
 #include <Arduino.h>
 #define PIN 2 
 // do we have to define each pin?
