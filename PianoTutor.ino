@@ -6,7 +6,6 @@
 #define PIN 2 
 // do we have to define each pin?
 
-// Pin configuration
 const int piezoPin = 8; // pin connected to the buzzer
 const int buttonPins[] = {2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, A0}; // sample pins
 
