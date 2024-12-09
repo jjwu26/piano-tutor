@@ -43,6 +43,10 @@ void loop() {
   }
 }
 
+//not sure how to do pauses lol       
+//twinkle twinkle: [0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0]
+//duration [200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300]
+
 void game(int[] song) {
   //play LED instructions
   for (int i = 0; i < 12; i++) {
