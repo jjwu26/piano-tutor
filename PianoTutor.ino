@@ -43,12 +43,8 @@ void loop() {
   }
 }
 
-//not sure how to do pauses lol       
-//twinkle twinkle: [0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0]
-//duration [200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300]
-
-void game(int[] song) {
-  //play LED instructions
+// play LED instructions and correct tune
+void play_song(int[] song, int[] duration){
   //change pins to output mode
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], OUTPUT);
@@ -59,10 +55,20 @@ void game(int[] song) {
       tone(piezoPin, notes[song[i]]);  
     // light up the right LED
       digitalWrite(buttonPins[song[i]], 1); 
-      delay(200);
+      delay(duration[i]);
       digitalWrite(buttonPins[song[i]], 0);
+      noTone(piezoPin);        // stop playing
   }
+  
+}
 
+//not sure how to do pauses lol       
+//twinkle twinkle: [0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0]
+//duration [200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300]
+
+void game(int[] song, int[] duration) {
+  play_song(song, duration);
+  
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], INPUT);
   }
@@ -72,17 +78,16 @@ void game(int[] song) {
       for(int j = 0; j < 12; j++){
           if (digitalRead(buttonPins[j]) == LOW && j == i) {
               tone(piezoPin, notes[j]); // play the corresponding note
-              delay(200);              // delay for note duration
+              while(digitalRead(buttonPins[j]) == LOW ){
+                //keep playing until the key is released
+              }
               noTone(piezoPin);        // stop playing
           } else if (digitalRead(buttonPins[j]) == LOW && j != i){
               //they played the wrong note
           }
       }
   }
-    // light up the right LED
-      digitalWrite(buttonPins[song[i]], 1); 
-      delay(200);
-      digitalWrite(buttonPins[song[i]], 0);
+
   }
   //track button presses and alert when incorrect
 }
