@@ -66,13 +66,19 @@ void game(int[] song) {
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], INPUT);
   }
+  
   for (int i = 0; i < song.length; i++){
       int correctNote = song[i];
-      if (digitalRead(buttonPins[i]) == LOW) {
-      tone(piezoPin, notes[i]); // play the corresponding note
-      delay(200);              // delay for note duration
-      noTone(piezoPin);        // stop playing
+      for(int j = 0; j < 12; j++){
+          if (digitalRead(buttonPins[j]) == LOW && j == i) {
+              tone(piezoPin, notes[j]); // play the corresponding note
+              delay(200);              // delay for note duration
+              noTone(piezoPin);        // stop playing
+          } else if (digitalRead(buttonPins[j]) == LOW && j != i){
+              //they played the wrong note
+          }
       }
+  }
     // light up the right LED
       digitalWrite(buttonPins[song[i]], 1); 
       delay(200);
