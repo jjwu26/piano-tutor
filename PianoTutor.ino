@@ -66,8 +66,8 @@ void play_song(int[] song, int[] duration){
 }
 
 //not sure how to do pauses lol       
-//twinkle twinkle: [0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0]
-//duration [200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300]
+song = [0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0]
+duration = [200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300]
 
 void game(int[] song, int[] duration) {
   play_song(song, duration);
