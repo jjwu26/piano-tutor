@@ -103,7 +103,13 @@ void game(int song[], int duration[]) {
               }
               noTone(piezoPin);        // stop playing
           } else if (digitalRead(buttonPins[j]) == LOW && j != i){
-              //they played the wrong note
+              //they played the wrong note so light up the right one
+              digitalWrite(buttonPins[correctNote],1);
+              while(digitalRead(buttonPins[correctNode]) == HIGH ){
+                //keep playing until the key is released
+              }
+              tone(piezoPin, notes[j]); // play the corresponding note
+              digitalWrite(buttonPins[correctNote],0);
           }
       }
   }
