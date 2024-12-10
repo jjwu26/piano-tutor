@@ -9,6 +9,10 @@
 const int piezoPin = 8; // whatever pin is connected to the buzzer
 const int buttonPins[] = {2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, A0}; // pin list
 
+//twinkle twinkle
+int song[] = {0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0};
+int duration[] = {200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300};
+
 // note frequencies for one octave
 const int notes[] = {
   262, // C4
@@ -47,13 +51,13 @@ void loop() {
 }
 
 // play LED instructions and correct tune
-void play_song(int[] song, int[] duration){
+void play_song(int song[], int duration[]){
   //change pins to output mode
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], OUTPUT);
   }
   
-  for (int i = 0; i < song.length; i++){
+  for (int i = 0; i < sizeof(song); i++){
     // play the corresponding tone
       tone(piezoPin, notes[song[i]]);  
     // light up the right LED
@@ -66,17 +70,15 @@ void play_song(int[] song, int[] duration){
 }
 
 //not sure how to do pauses lol       
-song = [0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0]
-duration = [200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300]
 
-void game(int[] song, int[] duration) {
+void game(int song[], int duration[]) {
   play_song(song, duration);
   
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], INPUT);
   }
   
-  for (int i = 0; i < song.length; i++){
+  for (int i = 0; i < sizeof(song); i++){
       int correctNote = song[i];
       for(int j = 0; j < 12; j++){
           if (digitalRead(buttonPins[j]) == LOW && j == i) {
@@ -91,6 +93,6 @@ void game(int[] song, int[] duration) {
       }
   }
 
-  }
-  //track button presses and alert when incorrect
 }
+  //track button presses and alert when incorrect
+
