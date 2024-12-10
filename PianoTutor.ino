@@ -37,9 +37,10 @@ void loop() {
     // check if the button is pressed 
     if (digitalRead(buttonPins[i]) == LOW) {
       tone(piezoPin, notes[i]); // play the corresponding note
-      while(digitalRead(buttonPins[j]) == LOW ){
-                //keep playing until the key is released
-      }      
+      // while(digitalRead(buttonPins[j]) == LOW ){
+      //        //keep playing until the key is released
+      // }      
+      delay(200);
       noTone(piezoPin);        // stop playing
     }
   }
