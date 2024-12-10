@@ -4,10 +4,10 @@
 
 #include <Arduino.h>
 #define PIN 2 
-// do we have to define each pin?
+// have to define each pin prob
 
-const int piezoPin = 8; // pin connected to the buzzer
-const int buttonPins[] = {2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, A0}; // sample pins
+const int piezoPin = 8; // whatever pin is connected to the buzzer
+const int buttonPins[] = {2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, A0}; // pin list
 
 // note frequencies for one octave
 const int notes[] = {
@@ -37,7 +37,9 @@ void loop() {
     // check if the button is pressed 
     if (digitalRead(buttonPins[i]) == LOW) {
       tone(piezoPin, notes[i]); // play the corresponding note
-      delay(200);              // delay for note duration
+      while(digitalRead(buttonPins[j]) == LOW ){
+                //keep playing until the key is released
+      }      
       noTone(piezoPin);        // stop playing
     }
   }
