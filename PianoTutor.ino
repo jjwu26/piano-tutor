@@ -11,8 +11,14 @@ const int buttonPins[] = {2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, A0}; // pin list
 
 //twinkle twinkle
 int song[] = {0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0};
-int duration[] = {200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300};
 
+//jingle bells
+int song2[] = {4, 4, 4, 4, 4, 4, 4, 6, 0, 2, 4};
+
+// int song3[] = {4, 4, 4, 2, 4, 4, 2, }
+
+int duration[] = {200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300};
+int duration2[] = {200, 200, 300, 200, 200, 300, 200, 200, 200, 200, 300};
 // note frequencies for one octave
 const int notes[] = {
   262, // C4
@@ -57,7 +63,7 @@ void play_song(int song[], int duration[]){
     pinMode(buttonPins[i], OUTPUT);
   }
   
-  for (int i = 0; i < sizeof(song); i++){
+  for (int i = 0; i < sizeof(song)/sizeof(song[i]); i++){
     // play the corresponding tone
       tone(piezoPin, notes[song[i]]);  
     // light up the right LED
@@ -69,7 +75,6 @@ void play_song(int song[], int duration[]){
   
 }
 
-//not sure how to do pauses lol       
 
 void game(int song[], int duration[]) {
   play_song(song, duration);
@@ -78,7 +83,7 @@ void game(int song[], int duration[]) {
     pinMode(buttonPins[i], INPUT);
   }
   
-  for (int i = 0; i < sizeof(song); i++){
+  for (int i = 0; i < sizeof(song)/sizeof(song[i]); i++){
       int correctNote = song[i];
       for(int j = 0; j < 12; j++){
           if (digitalRead(buttonPins[j]) == LOW && j == i) {
