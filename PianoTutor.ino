@@ -13,12 +13,12 @@ const int buttonPins[] = {34, 35, 32, 33, 4, 26, 27, 14, 12, 13, 15, 2}; // pin 
 
 //twinkle twinkle
 int song[] = {0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0};
-
 //jingle bells
 int song2[] = {4, 4, 4, 4, 4, 4, 4, 6, 0, 2, 4};
 
 int duration[] = {200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300};
 int duration2[] = {200, 200, 300, 200, 200, 300, 200, 200, 200, 200, 300};
+
 // note frequencies for one octave
 const int notes[] = {
   262, // C4
@@ -57,10 +57,7 @@ void loop() {
     // check if the button is pressed 
     if (digitalRead(buttonPins[i]) == LOW) {
       tone(piezoPin, notes[i]); // play the corresponding note
-      while(digitalRead(buttonPins[i]) == LOW ){
-             //keep playing until the key is released
-      }      
-      delay(200);
+    } else{
       noTone(piezoPin);        // stop playing
     }
   }
@@ -95,22 +92,30 @@ void game(int song[], int duration[]) {
   //track button presses and alert when incorrect
   for (int i = 0; i < sizeof(song)/sizeof(song[i]); i++){
       int correctNote = song[i];
-      for(int j = 0; j < 12; j++){
-          if (digitalRead(buttonPins[j]) == LOW && j == i) {
-              tone(piezoPin, notes[j]); // play the corresponding note
-              while(digitalRead(buttonPins[j]) == LOW ){
-                //keep playing until the key is released
-              }
-              noTone(piezoPin);        // stop playing
-          } else if (digitalRead(buttonPins[j]) == LOW && j != i){
-              //they played the wrong note so light up the right one
-              digitalWrite(buttonPins[correctNote],1);
-              while(digitalRead(buttonPins[correctNode]) == HIGH ){
-                //keep playing until the key is released
-              }
-              tone(piezoPin, notes[j]); // play the corresponding note
-              digitalWrite(buttonPins[correctNote],0);
-          }
+      boolean clicked = false;
+      while(!clicked){
+        for(int j = 0; j < 12; j++){
+            if (digitalRead(buttonPins[j]) == LOW && j == i) {
+                clicked = true;
+                tone(piezoPin, notes[j]); // play the corresponding note
+                while(digitalRead(buttonPins[j]) == LOW ){
+                  //keep playing sound until the key is released
+                }
+                noTone(piezoPin);        // stop playing
+            } else if (digitalRead(buttonPins[j]) == LOW && j != i){
+                clicked = true;
+                //they played the wrong note so light up the right one
+                digitalWrite(buttonPins[j],1);
+                while(digitalRead(buttonPins[j]) == HIGH ){
+                  //wait until key is pressed 
+                }
+                digitalWrite(buttonPins[correctNote],0);
+                tone(piezoPin, notes[j]); // play the corresponding note
+                while(digitalRead(buttonPins[j]) == LOW ){
+                  //keep playing until the key is released
+                }
+            }
+        }
       }
   }
 
