@@ -2,13 +2,12 @@
  * Final Project: Piano Tutor
  */
 #include <SSD1306Wire.h>
-
 #include <Arduino.h>
 
+#define LED 22
 SSD1306Wire display(0x3c, SDA, SCL);
 
 // have to define each pin prob
-
 const int piezoPin = 25; // whatever pin is connected to the buzzer
 const int buttonPins[] = {34, 35, 32, 33, 4, 26, 27, 14, 12, 13, 15, 2}; // pin list
 
@@ -38,14 +37,13 @@ const int notes[] = {
 
 void setup() { //might have to change this to configure LEDs
   pinMode(LED, OUTPUT);
-  pinMode(BUZZER, OUTPUT);
+  pinMode(piezoPin, OUTPUT);
 
   ledcSetup(0, 5000, 8);
 
   display.init();
   display.flipScreenVertically();
   display.setFont(ArialMT_Plain_24);
-  display.print(style_names[chord_style]);
   display.display();  
 
   for (int i = 0; i < 12; i++) {
@@ -59,7 +57,7 @@ void loop() {
     // check if the button is pressed 
     if (digitalRead(buttonPins[i]) == LOW) {
       tone(piezoPin, notes[i]); // play the corresponding note
-      while(digitalRead(buttonPins[j]) == LOW ){
+      while(digitalRead(buttonPins[i]) == LOW ){
              //keep playing until the key is released
       }      
       delay(200);
