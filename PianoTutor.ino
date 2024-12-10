@@ -1,21 +1,22 @@
 /* CICS256: Make
  * Final Project: Piano Tutor
  */
+#include <SSD1306Wire.h>
 
 #include <Arduino.h>
-#define PIN 2 
+
+SSD1306Wire display(0x3c, SDA, SCL);
+
 // have to define each pin prob
 
-const int piezoPin = 8; // whatever pin is connected to the buzzer
-const int buttonPins[] = {2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, A0}; // pin list
+const int piezoPin = 25; // whatever pin is connected to the buzzer
+const int buttonPins[] = {34, 35, 32, 33, 4, 26, 27, 14, 12, 13, 15, 2}; // pin list
 
 //twinkle twinkle
 int song[] = {0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0};
 
 //jingle bells
 int song2[] = {4, 4, 4, 4, 4, 4, 4, 6, 0, 2, 4};
-
-// int song3[] = {4, 4, 4, 2, 4, 4, 2, }
 
 int duration[] = {200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300};
 int duration2[] = {200, 200, 300, 200, 200, 300, 200, 200, 200, 200, 300};
@@ -36,6 +37,17 @@ const int notes[] = {
 };
 
 void setup() { //might have to change this to configure LEDs
+  pinMode(LED, OUTPUT);
+  pinMode(BUZZER, OUTPUT);
+
+  ledcSetup(0, 5000, 8);
+
+  display.init();
+  display.flipScreenVertically();
+  display.setFont(ArialMT_Plain_24);
+  display.print(style_names[chord_style]);
+  display.display();  
+
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], INPUT_PULLUP);
   }
@@ -47,9 +59,9 @@ void loop() {
     // check if the button is pressed 
     if (digitalRead(buttonPins[i]) == LOW) {
       tone(piezoPin, notes[i]); // play the corresponding note
-      // while(digitalRead(buttonPins[j]) == LOW ){
-      //        //keep playing until the key is released
-      // }      
+      while(digitalRead(buttonPins[j]) == LOW ){
+             //keep playing until the key is released
+      }      
       delay(200);
       noTone(piezoPin);        // stop playing
     }
@@ -62,7 +74,6 @@ void play_song(int song[], int duration[]){
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], OUTPUT);
   }
-  
   for (int i = 0; i < sizeof(song)/sizeof(song[i]); i++){
     // play the corresponding tone
       tone(piezoPin, notes[song[i]]);  
@@ -83,6 +94,7 @@ void game(int song[], int duration[]) {
     pinMode(buttonPins[i], INPUT);
   }
   
+  //track button presses and alert when incorrect
   for (int i = 0; i < sizeof(song)/sizeof(song[i]); i++){
       int correctNote = song[i];
       for(int j = 0; j < 12; j++){
@@ -99,5 +111,4 @@ void game(int song[], int duration[]) {
   }
 
 }
-  //track button presses and alert when incorrect
 
