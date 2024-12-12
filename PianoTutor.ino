@@ -64,12 +64,12 @@ void loop() {
 }
 
 // play LED instructions and correct tune
-void play_song(int song[], int duration[]){
+void play_song(int song[], int duration[], int length){
   //change pins to output mode
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], OUTPUT);
   }
-  for (int i = 0; i < sizeof(song)/sizeof(song[i]); i++){
+  for (int i = 0; i < length; i++){
     // play the corresponding tone
       tone(piezoPin, notes[song[i]]);  
     // light up the right LED
@@ -78,12 +78,15 @@ void play_song(int song[], int duration[]){
       digitalWrite(buttonPins[song[i]], 0);
       noTone(piezoPin);        // stop playing
   }
+  for (int i = 0; i < 12; i++) {
+       pinMode(buttonPins[i], INPUT_PULLUP);
+  }
   
 }
 
 
-void game(int song[], int duration[]) {
-  play_song(song, duration);
+void game(int song[], int duration[], int song_length) {
+  play_song(song, duration, song_length);
   
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], INPUT);
