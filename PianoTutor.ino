@@ -60,6 +60,13 @@ void loop() {
       noTone(piezoPin);        // stop playing
     }
   }
+
+  int chosen_song = song_selection();
+  if(chosen_song == 1){
+    game(song, duration, length);
+  } else if(chosen_song == 2){
+    game(song2, duration2, length2);
+  }
 }
 
 // play LED instructions and correct tune
@@ -68,7 +75,6 @@ void play_song(int song[], int duration[], int length){
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], INPUT_PULLUP);
   }
-
   for (int i = 0; i < length; i++){
     // light up the right LED
       pinMode(buttonPins[i], OUTPUT);
@@ -93,7 +99,6 @@ void play_mod_tone(int freq, int duration){
   }
   noTone(piezoPin);        // stop playing
 }
-
 
 void game(int song[], int duration[], int song_length) {
 
