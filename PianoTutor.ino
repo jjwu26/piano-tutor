@@ -12,11 +12,13 @@ const int buttonPins[] = {34, 35, 32, 33, 4, 26, 27, 14, 12, 13, 15, 2}; // pin 
 
 // twinkle twinkle
 int song[] = {0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0};
+int duration[] = {400, 400, 400, 400, 400, 400, 500, 400, 400, 400, 400, 400, 400, 500};
+int length = 14;
+
 // jingle bells
 int song2[] = {4, 4, 4, 4, 4, 4, 4, 6, 0, 2, 4};
-
-int duration[] = {400, 400, 400, 400, 400, 400, 500, 400, 400, 400, 400, 400, 400, 500};
 int duration2[] = {200, 200, 300, 200, 200, 300, 200, 200, 200, 200, 300};
+int length2 = 11;
 
 // note frequencies for one octave
 const int notes[] = {
@@ -43,7 +45,7 @@ void setup() { //might have to change this to configure LEDs
   }
   Serial.print("Setup completed");
 
-  //play_song(song, duration, 14);
+  //play_song(song, duration, length);
 }
 
 
@@ -64,22 +66,21 @@ void loop() {
 void play_song(int song[], int duration[], int length){
   //change pins to output mode
   for (int i = 0; i < 12; i++) {
-    pinMode(buttonPins[i], OUTPUT);
-    digitalWrite(buttonPins[i], 0); 
+    pinMode(buttonPins[i], INPUT_PULLUP);
   }
 
   for (int i = 0; i < length; i++){
     // light up the right LED
-      digitalWrite(buttonPins[song[i]], 0); 
+      pinMode(buttonPins[i], OUTPUT);
     // play the corresponding tone
       tone(piezoPin, notes[song[i]]);  
       delay(duration[i]);
-      digitalWrite(buttonPins[song[i]], 1);
+      pinMode(buttonPins[i], INPUT_PULLUP);
 
   }
-  for (int i = 0; i < 12; i++) {
-       pinMode(buttonPins[i], INPUT_PULLUP);
-  }
+  // for (int i = 0; i < 12; i++) {
+  //      pinMode(buttonPins[i], INPUT_PULLUP);
+  // }
 }
 
 void play_mod_tone(int freq, int duration){
@@ -95,14 +96,19 @@ void play_mod_tone(int freq, int duration){
 
 
 void game(int song[], int duration[], int song_length) {
+
   play_song(song, duration, song_length);
-  
+
+  //ensuring buttons can recieve input  
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], INPUT);
   }
   
+  //number of correct notes played
+  int score = 0;
+
   //track button presses and alert when incorrect
-  for (int i = 0; i < sizeof(song)/sizeof(song[i]); i++){
+  for (int i = 0; i < song_length; i++){
       int correctNote = song[i];
       boolean clicked = false;
       while(!clicked){
@@ -110,26 +116,44 @@ void game(int song[], int duration[], int song_length) {
             if (digitalRead(buttonPins[j]) == LOW && j == i) {
                 clicked = true;
                 tone(piezoPin, notes[j]); // play the corresponding note
-                while(digitalRead(buttonPins[j]) == LOW ){
-                  //keep playing sound until the key is released
-                }
+                // while(digitalRead(buttonPins[j]) == LOW ){
+                //   //keep playing sound until the key is released
+                // }
                 noTone(piezoPin);        // stop playing
+                score ++;
             } else if (digitalRead(buttonPins[j]) == LOW && j != i){
-                clicked = true;
                 //they played the wrong note so light up the right one
                 digitalWrite(buttonPins[j],1);
-                while(digitalRead(buttonPins[j]) == HIGH ){
-                  //wait until key is pressed 
-                }
                 digitalWrite(buttonPins[correctNote],0);
                 tone(piezoPin, notes[j]); // play the corresponding note
-                while(digitalRead(buttonPins[j]) == LOW ){
-                  //keep playing until the key is released
-                }
+                clicked = true;
             }
         }
       }
   }
+  Serial.print("final score: ");
+  Serial.println(score);
+}
+
+int song_selection(){
+  //let user pick which song they want to learn
+  Serial.println("Select a song to learn by pressing the appropriate key!");
+  Serial.println("C: Twinkle Twinkle Little Star");
+  Serial.println("D: Jingle Bells");
+  Serial.println("E: ");
+  Serial.println("F: ");
+  Serial.println("G: ");
+  
+  while (true){
+    for (int i = 0; i < 12; i++) {
+        // check if the button is pressed 
+        if (digitalRead(buttonPins[i]) == LOW) {
+              return i;    
+        }
+    }
+  }
+  
+
 
 }
 
