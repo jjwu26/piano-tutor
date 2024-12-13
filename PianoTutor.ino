@@ -4,19 +4,18 @@
 #include <SSD1306Wire.h>
 #include <Arduino.h>
 
-#define LED 22
-SSD1306Wire display(0x3c, SDA, SCL);
+#define LCD 22
 
 // have to define each pin prob
 const int piezoPin = 25; // whatever pin is connected to the buzzer
 const int buttonPins[] = {34, 35, 32, 33, 4, 26, 27, 14, 12, 13, 15, 2}; // pin list
 
-//twinkle twinkle
+// twinkle twinkle
 int song[] = {0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0};
-//jingle bells
+// jingle bells
 int song2[] = {4, 4, 4, 4, 4, 4, 4, 6, 0, 2, 4};
 
-int duration[] = {200, 200, 200, 200, 200, 200, 300, 200, 200, 200, 200, 200, 200, 300};
+int duration[] = {400, 400, 400, 400, 400, 400, 500, 400, 400, 400, 400, 400, 400, 500};
 int duration2[] = {200, 200, 300, 200, 200, 300, 200, 200, 200, 200, 300};
 
 // note frequencies for one octave
@@ -36,28 +35,24 @@ const int notes[] = {
 };
 
 void setup() { //might have to change this to configure LEDs
-  pinMode(LED, OUTPUT);
   pinMode(piezoPin, OUTPUT);
-
   ledcSetup(0, 5000, 8);
-
-  display.init();
-  display.flipScreenVertically();
-  display.setFont(ArialMT_Plain_24);
-  display.display();  
 
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], INPUT_PULLUP);
   }
-  pinMode(piezoPin, OUTPUT);
+  Serial.print("Setup completed");
 }
+
 
 void loop() {
   for (int i = 0; i < 12; i++) {
     // check if the button is pressed 
     if (digitalRead(buttonPins[i]) == LOW) {
       tone(piezoPin, notes[i]); // play the corresponding note
-    } else{
+      Serial.print("Button pressed: ");
+      Serial.println(i);
+      delay(300);
       noTone(piezoPin);        // stop playing
     }
   }
@@ -69,6 +64,7 @@ void play_song(int song[], int duration[], int length){
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], OUTPUT);
   }
+
   for (int i = 0; i < length; i++){
     // play the corresponding tone
       tone(piezoPin, notes[song[i]]);  
