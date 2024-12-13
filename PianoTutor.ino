@@ -42,6 +42,8 @@ void setup() { //might have to change this to configure LEDs
     pinMode(buttonPins[i], INPUT_PULLUP);
   }
   Serial.print("Setup completed");
+
+  //play_song(song, duration, 14);
 }
 
 
@@ -63,21 +65,32 @@ void play_song(int song[], int duration[], int length){
   //change pins to output mode
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], OUTPUT);
+    digitalWrite(buttonPins[i], 0); 
   }
 
   for (int i = 0; i < length; i++){
+    // light up the right LED
+      digitalWrite(buttonPins[song[i]], 0); 
     // play the corresponding tone
       tone(piezoPin, notes[song[i]]);  
-    // light up the right LED
-      digitalWrite(buttonPins[song[i]], 1); 
       delay(duration[i]);
-      digitalWrite(buttonPins[song[i]], 0);
-      noTone(piezoPin);        // stop playing
+      digitalWrite(buttonPins[song[i]], 1);
+
   }
   for (int i = 0; i < 12; i++) {
        pinMode(buttonPins[i], INPUT_PULLUP);
   }
-  
+}
+
+void play_mod_tone(int freq, int duration){
+  int time = millis();
+  while(time < millis()+duration){
+    float currentAngle = 0;
+    float dutyCycle = map(sin(currentAngle), -1, 1, 10, 90); // Adjust values to control the rounding effect
+    tone(piezoPin, freq, dutyCycle);
+    currentAngle += 0.1; // Increment the angle for the next loop
+  }
+  noTone(piezoPin);        // stop playing
 }
 
 
