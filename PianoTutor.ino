@@ -17,8 +17,13 @@ int length = 14;
 
 // jingle bells
 int song2[] = {4, 4, 4, 4, 4, 4, 4, 6, 0, 2, 4};
-int duration2[] = {200, 200, 300, 200, 200, 300, 200, 200, 200, 200, 300};
+int duration2[] = {400, 400, 500, 400, 400, 500, 400, 400, 400, 400, 500};
 int length2 = 11;
+
+//ode to joy
+int song3[] = {2, 2, 3, 4, 4, 3, 2, 1, 0, 0, 1, 2, 2, 1, 1};
+int duration3 = {300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 400, 200, 200};
+int length3 = 15;
 
 // note frequencies for one octave
 const int notes[] = {
