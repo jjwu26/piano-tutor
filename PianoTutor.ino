@@ -3,16 +3,17 @@
  */
 #include <SSD1306Wire.h>
 #include <Arduino.h>
+#include <LiquidCrystal_I2C.h>
 
-#define LCD 22
 
-// have to define each pin prob
-const int piezoPin = 25; // whatever pin is connected to the buzzer
+const int piezoPin = 25; 
 const int buttonPins[] = {34, 35, 32, 33, 4, 26, 27, 14, 12, 13, 15, 2}; // pin list
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // twinkle twinkle
 int song[] = {0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0};
-int duration[] = {400, 400, 400, 400, 400, 400, 500, 400, 400, 400, 400, 400, 400, 500};
+int duration[] = {400, 400, 400, 400, 400, 400, 500, 400, 400, 400, 400, 400, 400, 400};
 int length = 14;
 
 // jingle bells
@@ -22,8 +23,18 @@ int length2 = 11;
 
 //ode to joy
 int song3[] = {2, 2, 3, 4, 4, 3, 2, 1, 0, 0, 1, 2, 2, 1, 1};
-int duration3 = {300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 400, 200, 200};
+int duration3[] = {300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 400, 200, 200};
 int length3 = 15;
+
+int star_wars[] = {4, 4, 4, 6, 11, 4, 6, 11, 4};
+int star_wars_duration[] = {
+    300, 300, 300, 
+    500, 
+    300, 
+    300, 500, 
+    800
+};
+
 
 // note frequencies for one octave
 const int notes[] = {
@@ -41,37 +52,56 @@ const int notes[] = {
   494  // B4
 };
 
-void setup() { //might have to change this to configure LEDs
+void setup() { 
   pinMode(piezoPin, OUTPUT);
-  ledcSetup(0, 5000, 8);
 
   for (int i = 0; i < 12; i++) {
     pinMode(buttonPins[i], INPUT_PULLUP);
   }
-  Serial.print("Setup completed");
 
-  //play_song(song, duration, length);
-}
-
-
-void loop() {
-  for (int i = 0; i < 12; i++) {
-    // check if the button is pressed 
-    if (digitalRead(buttonPins[i]) == LOW) {
-      tone(piezoPin, notes[i]); // play the corresponding note
-      Serial.print("Button pressed: ");
-      Serial.println(i);
-      delay(300);
-      noTone(piezoPin);        // stop playing
-    }
-  }
-
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(1, 0);
+  lcd.print("Welcome to Piano Tutor");
+  delay(1000);
+  lcd.clear();
   int chosen_song = song_selection();
-  if(chosen_song == 1){
+  delay(1000);
+
+  lcd.clear();
+  lcd.print(chosen_song);
+  if(chosen_song == 0){
+    lcd.clear();
+    lcd.setCursor(1, 0);
+    lcd.print("You selected Twinkle");
+    delay(1000);
     game(song, duration, length);
   } else if(chosen_song == 2){
+    lcd.clear();
+    lcd.setCursor(1, 0);
+    lcd.print("Jingle Bells");
+    delay(1000);
     game(song2, duration2, length2);
+  } else if(chosen_song == 4){
+    lcd.clear();
+    lcd.setCursor(1, 0);
+    lcd.print("Star Wars");
+    delay(1000);
+    game(star_wars, star_wars_duration, 9);
   }
+}
+
+void loop() {
+  // for (int i = 0; i < 12; i++) {
+  //   // check if the button is pressed 
+  //   if (digitalRead(buttonPins[i]) == LOW) {
+  //     // play_mod_tone(notes[i], 100);
+  //     tone(piezoPin, notes[i]); // play the corresponding note
+  //     delay(300);
+  //     noTone(piezoPin);        // stop playing
+  //   }
+  // }
+  
 }
 
 // play LED instructions and correct tune
@@ -82,13 +112,16 @@ void play_song(int song[], int duration[], int length){
   }
   for (int i = 0; i < length; i++){
     // light up the right LED
-      pinMode(buttonPins[i], OUTPUT);
+      pinMode(buttonPins[song[i]], OUTPUT);
     // play the corresponding tone
       tone(piezoPin, notes[song[i]]);  
       delay(duration[i]);
-      pinMode(buttonPins[i], INPUT_PULLUP);
-
+      // play_mod_tone(notes[song[i]], duration[i]);
+      pinMode(buttonPins[song[i]], INPUT_PULLUP);
   }
+  noTone(piezoPin);
+
+  
   // for (int i = 0; i < 12; i++) {
   //      pinMode(buttonPins[i], INPUT_PULLUP);
   // }
@@ -120,50 +153,124 @@ void game(int song[], int duration[], int song_length) {
   //track button presses and alert when incorrect
   for (int i = 0; i < song_length; i++){
       int correctNote = song[i];
+      lcd.clear();
+      lcd.setCursor(1, 0);
+      lcd.print(getRightKey(correctNote));
+      delay(500);
       boolean clicked = false;
       while(!clicked){
         for(int j = 0; j < 12; j++){
-            if (digitalRead(buttonPins[j]) == LOW && j == i) {
-                clicked = true;
-                tone(piezoPin, notes[j]); // play the corresponding note
-                // while(digitalRead(buttonPins[j]) == LOW ){
-                //   //keep playing sound until the key is released
-                // }
-                noTone(piezoPin);        // stop playing
-                score ++;
-            } else if (digitalRead(buttonPins[j]) == LOW && j != i){
-                //they played the wrong note so light up the right one
-                digitalWrite(buttonPins[j],1);
-                digitalWrite(buttonPins[correctNote],0);
-                tone(piezoPin, notes[j]); // play the corresponding note
-                clicked = true;
+            if (digitalRead(buttonPins[j]) == LOW){
+                // lcd.print(getRightKey(j));
+                if(j == correctNote){
+                  clicked = true;
+                  tone(piezoPin, notes[correctNote]); // play the corresponding note
+                  delay(300);
+                  noTone(piezoPin);        // stop playing
+                  score ++; 
+                } else {
+                  if(j != 11){ // unfortunately there is a bug with the B key so i made this check to ignore it
+                    lcd.setCursor(2, 0);
+                    lcd.print("Wrong note!");
+                    score --;
+                    digitalWrite(buttonPins[correctNote],1);
+                    delay(1000);
+                    digitalWrite(buttonPins[correctNote],0);
+                  }
+                }
             }
+              
         }
       }
   }
-  Serial.print("final score: ");
-  Serial.println(score);
+  lcd.clear();
+  lcd.print("Score: ");
+  lcd.print(score);
+  lcd.print("/");
+  lcd.print(song_length);
+
+}
+
+String getRightKey(int key){
+  if(key == 0){
+    return "C";
+  } else if (key == 1){
+    return "C#";
+  } else if (key == 2){
+    return "D";
+  } else if (key == 3){
+    return "D#";
+  } else if (key == 4){
+    return "E";
+  } else if (key == 5){
+    return "F";
+  } else if (key == 6){
+    return "F#";
+  } else if (key == 7){
+    return "G";
+  } else if (key == 8){
+    return "G#";
+  } else if (key == 9){
+    return "A";
+  } else if (key == 10){
+    return "A#";
+  } else if (key == 11){
+    return "B";
+  }
 }
 
 int song_selection(){
   //let user pick which song they want to learn
-  Serial.println("Select a song to learn by pressing the appropriate key!");
-  Serial.println("C: Twinkle Twinkle Little Star");
-  Serial.println("D: Jingle Bells");
-  Serial.println("E: ");
-  Serial.println("F: ");
-  Serial.println("G: ");
-  
+  lcd.print("Select a song");
+  delay(2000);
+  lcd.clear();
+
+  lcd.print("to begin learning");
+  delay(2000);
+  lcd.clear();
+
+  lcd.print("by pressing the");
+  delay(2000);
+      lcd.clear();
+
+
+  lcd.print(" appropriate key:");
+  delay(2000);
+      lcd.clear();
+
+
+  lcd.print("C: Twinkle Twinkle");
+    delay(2000);
+    lcd.clear();
+
+
+  lcd.print("D: Jingle Bells");
+    delay(2000);
+    lcd.clear();
+
+  lcd.print("E: Star Wars");
+    delay(2000);
+    lcd.clear();
+
+  lcd.print("F: ");
+    delay(2000);
+    lcd.clear();
+
+  lcd.print("G: ");
+    delay(2000);
+      lcd.clear();
+
+  lcd.print("Please press a key. ");
   while (true){
     for (int i = 0; i < 12; i++) {
         // check if the button is pressed 
         if (digitalRead(buttonPins[i]) == LOW) {
+                lcd.clear();
+            lcd.print("Initializing game. ");
               return i;    
         }
     }
   }
-  
-
 
 }
 
