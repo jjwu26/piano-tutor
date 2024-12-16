@@ -13,18 +13,25 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // twinkle twinkle
 int song[] = {0, 0, 7, 7, 9, 9, 7, 5, 5, 4, 4, 2, 2, 0};
-int duration[] = {400, 400, 400, 400, 400, 400, 500, 400, 400, 400, 400, 400, 400, 400};
+int duration[] = {400, 400, 400, 400, 400, 400, 500, 400, 400, 400, 400, 400, 400, 500};
 int length = 14;
 
 // jingle bells
-int song2[] = {4, 4, 4, 4, 4, 4, 4, 6, 0, 2, 4};
-int duration2[] = {400, 400, 500, 400, 400, 500, 400, 400, 400, 400, 500};
-int length2 = 11;
+int song2[] = {4, 4, 4, 0, 4, 4, 4, 0, 4, 7, 2, 3, 4};
+int duration2[] = {400, 400, 800, 400, 400, 800, 400, 400, 400, 400, 400, 400, 800};
+int length2 = 13;
 
 //ode to joy
-int song3[] = {2, 2, 3, 4, 4, 3, 2, 1, 0, 0, 1, 2, 2, 1, 1};
-int duration3[] = {300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 400, 200, 200};
-int length3 = 15;
+int song5[] = {4, 4, 5, 7, 7, 5, 4, 2, 0, 0, 2, 4, 4, 2, 2, 
+               4, 4, 5, 7, 7, 5, 4, 2, 0, 0, 2, 4, 2, 0, 0};
+int duration5[] = {400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 600, 200, 800,
+                   400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 400, 600, 200, 800};
+int length5 = 30;
+
+// Happy Birthday
+int song4[] = {0, 0, 2, 0, 5, 4, 0, 0, 2, 0, 7, 5, 0, 0, 12, 9, 5, 4, 2, 10, 10, 9, 5, 7, 5};
+int duration4[] = {400, 400, 500, 500, 500, 500, 500, 400, 400, 500, 500, 500, 400, 400, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500};
+int length4 = 25;
 
 int star_wars[] = {4, 4, 4, 6, 11, 4, 6, 11, 4};
 int star_wars_duration[] = {
@@ -62,33 +69,8 @@ void setup() {
   lcd.init();
   lcd.backlight();
   lcd.setCursor(1, 0);
-  lcd.print("Welcome to Piano Tutor");
-  delay(1000);
-  lcd.clear();
-  int chosen_song = song_selection();
-  delay(1000);
 
-  lcd.clear();
-  lcd.print(chosen_song);
-  if(chosen_song == 0){
-    lcd.clear();
-    lcd.setCursor(1, 0);
-    lcd.print("You selected Twinkle");
-    delay(1000);
-    game(song, duration, length);
-  } else if(chosen_song == 2){
-    lcd.clear();
-    lcd.setCursor(1, 0);
-    lcd.print("Jingle Bells");
-    delay(1000);
-    game(song2, duration2, length2);
-  } else if(chosen_song == 4){
-    lcd.clear();
-    lcd.setCursor(1, 0);
-    lcd.print("Star Wars");
-    delay(1000);
-    game(star_wars, star_wars_duration, 9);
-  }
+  game_setup();
 }
 
 void loop() {
@@ -104,6 +86,50 @@ void loop() {
   
 }
 
+
+void game_setup(){
+  lcd.print("Welcome to Piano Tutor");
+  delay(1000);
+  lcd.clear();
+
+  int chosen_song = song_selection();
+  delay(1000);
+
+  lcd.clear();
+  lcd.print(chosen_song);
+  if(chosen_song == 0){
+    lcd.clear();
+    lcd.setCursor(1, 0);
+    lcd.print("Twinkle Twinkle");
+    delay(1000);
+    game(song, duration, length);
+  } else if(chosen_song == 2){
+    lcd.clear();
+    lcd.setCursor(1, 0);
+    lcd.print("Jingle Bells");
+    delay(1000);
+    game(song2, duration2, length2);
+  } else if(chosen_song == 4){
+    lcd.clear();
+    lcd.setCursor(1, 0);
+    lcd.print("Star Wars");
+    delay(1000);
+    game(star_wars, star_wars_duration, 9);
+  }else if(chosen_song == 5){
+    lcd.clear();
+    lcd.setCursor(1, 0);
+    lcd.print("Happy Birthday");
+    delay(1000);
+    game(song4, duration4, 25);
+  } else if(chosen_song == 7){
+    lcd.clear();
+    lcd.setCursor(1, 0);
+    lcd.print("Ode to Joy");
+    delay(1000);
+    game(song5, duration5, 30);
+  }
+
+}
 // play LED instructions and correct tune
 void play_song(int song[], int duration[], int length){
   //change pins to output mode
@@ -170,7 +196,7 @@ void game(int song[], int duration[], int song_length) {
                   score ++; 
                 } else {
                   if(j != 11){ // unfortunately there is a bug with the B key so i made this check to ignore it
-                    lcd.setCursor(2, 0);
+                    lcd.setCursor(0, 1);
                     lcd.print("Wrong note!");
                     score --;
                     digitalWrite(buttonPins[correctNote],1);
@@ -188,7 +214,15 @@ void game(int song[], int duration[], int song_length) {
   lcd.print(score);
   lcd.print("/");
   lcd.print(song_length);
-
+  delay(3000);
+  lcd.clear();
+  lcd.print("Press C to play again");
+  while (true){
+        if (digitalRead(buttonPins[0]) == LOW) {
+            game_setup();
+        }
+  }
+  
 }
 
 String getRightKey(int key){
@@ -252,11 +286,11 @@ int song_selection(){
     delay(2000);
     lcd.clear();
 
-  lcd.print("F: ");
+  lcd.print("F: Happy Birthday");
     delay(2000);
     lcd.clear();
 
-  lcd.print("G: ");
+  lcd.print("G: Ode to Joy");
     delay(2000);
       lcd.clear();
 
@@ -265,7 +299,7 @@ int song_selection(){
     for (int i = 0; i < 12; i++) {
         // check if the button is pressed 
         if (digitalRead(buttonPins[i]) == LOW) {
-                lcd.clear();
+              lcd.clear();
             lcd.print("Initializing game. ");
               return i;    
         }
